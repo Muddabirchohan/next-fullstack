@@ -8,7 +8,7 @@ export  async function GET() {
     try {
 
         const feed = await prisma.post.findMany({
-          // where: { published: true },
+          where: { published: true },
           include: {
             author: {
               select: { name: true },
@@ -27,62 +27,74 @@ export  async function GET() {
 }
 
 
+// export  async function POST(data:any) {
+
+//   try {
+
+//       const feed = await prisma.post.create({
+//         data
+//       });
+
+//       return  NextResponse.json(feed)
 
 
-// export async function POST() {
-//   async function saveData() {
-//     try {
-//       // Fetch data from the API
-//       const response = await fetch("https://rickandmortyapi.com/api/character");
-//       if (!response.ok) {
-//         throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
-//       }
-
-//       // Convert the response to JSON
-//       const apiResponse = await response.json();
-
-//       // Save data to the Prisma database
-//       const charactersData = apiResponse.results;
-//       for (const characterData of charactersData) {
-//         await prisma.character.create({
-//           data: {
-//             id: characterData.id,
-//             name: characterData.name,
-//             status: characterData.status,
-//             species: characterData.species,
-//             type: characterData.type,
-//             gender: characterData.gender,
-//             origin: {
-//               create: {
-//                 name: characterData.origin.name,
-//                 url: characterData.origin.url,
-//               },
-//             },
-//             location: {
-//               create: {
-//                 name: characterData.location.name,
-//                 url: characterData.location.url,
-//               },
-//             },
-//             image: characterData.image,
-//             episodes: {
-//               create: characterData.episode.map((episodeUrl: any) => ({
-//                 url: episodeUrl,
-//               })),
-//             },
-//             url: characterData.url,
-//             created: new Date(characterData.created),
-//           },
-//         });
-//       }
-
-//       console.log("Data saved successfully.");
-//     } catch (error) {
-//       console.error("Error fetching or saving data:", error);
-//     } finally {
-//       await prisma.$disconnect();
+//     } catch (e) {
+//       console.log("exception occurred",e)
+//       return NextResponse.json({})
 //     }
-//   }
 
-//   return saveData();
 // }
+
+export async function POST(request: { json: () => any; }) {
+  try {
+    
+    
+    const body =  await request.json()
+
+    // Parse the stringified body as JSON
+    
+    const { title, content, published, authorId } = body;
+  
+
+
+    const post = await prisma.post.create({
+      data: {
+        title,
+        content,
+        published,
+        // authorId,
+      },
+    });
+
+    console.log("post",post)
+  
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error("eror in post", error);
+  }
+}
+
+
+
+
+
+export async function PATCH(request:any) {
+
+  try {
+    const body =  await request.json()
+
+    // Parse the stringified body as JSON
+    const {id } = body;
+
+    const postDelete = await prisma.post.delete({
+      where : {
+        id: id
+      }
+    })
+  
+    return NextResponse.json(postDelete);
+  } catch (error) {
+    console.error("eror in post", error);
+  }
+
+}

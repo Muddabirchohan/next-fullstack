@@ -16,5 +16,8 @@ const config: Config = {
     },
   },
   plugins: [],
+  api: {
+    bodyParser: true,
+  },
 }
 export default config
