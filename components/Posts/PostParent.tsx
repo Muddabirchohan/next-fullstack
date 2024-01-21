@@ -1,31 +1,41 @@
 "use client"
 
+import Image from 'next/image';
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react';
 import useSWR from 'swr';
 
-export default function PostParent({data,error}:any) {
+export default function PostParent({ data, error }: any) {
 
-  const deleteItem = async (id: any) => {
-    try {
-        const response = await fetch('/api/posts', {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id
-            }),
-          });
-    
-          if (!response.ok) {
-            throw new Error('Error creating post');
-          }
-    
-          const data = await response.json();
-          console.log('Post created:', data);
-      } catch (error) {
-        console.error('Error creating post:', error);
-      }
-  }
+
+    const router = useRouter()
+
+    const deleteItem = async (id: any) => {
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error creating post');
+            }
+
+            const data = await response.json();
+            console.log('Post created:', data);
+        } catch (error) {
+            console.error('Error creating post:', error);
+        }
+    }
+
+    const gotoBlogDetail = (id:any) => {
+        router.push(`posts/${id}`)
+    }
 
     if (error) return <div>An error occured.</div>
     if (!data && !error) return <div className='flex items-center justify-center py-5'>
@@ -39,16 +49,33 @@ export default function PostParent({data,error}:any) {
     </div>
 
     return (
-        <main className="min-h-screen items-center justify-between p-24">
-            <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm ">
-                {data?.map((item: { title: any;id: any }, index:number) => {
-                    return(
-                        <div> 
-                        <p key={index}> {item.title} </p>
-                        <button onClick={()=>deleteItem(item.id)}> delete </button>
+        <main className="min-h-screen items-center justify-between p-14">
+            <div className="items-center justify-center gap-20 text-sm  flex flex-wrap ">
+                {data?.map((item: { title: string; id: any, content: string }, index: number) => {
+                    return (
+                        <div className='max-w-sm h-200 rounded shadow-lg p-10' onClick={() => gotoBlogDetail(item.id)}>
+                            <div className='text-lg text-center'>
+                                <p key={index}> {item.title} </p>
+                            </div>
+
+                            <div className='flex justify-center'>
+                                <Image
+                                    src={`https://cdn.dummyjson.com/product-images/1/${index+1}.jpg`}
+                                    alt={''}
+                                    width={200}
+                                    height={100}
+                                    onErrorCapture={() => console.error("Image failed to load")}
+                                />
+                                
+                            </div>
+
+                            {/* <div className='text-sm'>
+                                <p key={index}> {item.content} </p>
+                            </div> */}
+                            <button onClick={() => deleteItem(item.id)}> delete </button>
                         </div>
                     )
-                } )}
+                })}
             </div>
         </main>
     )
