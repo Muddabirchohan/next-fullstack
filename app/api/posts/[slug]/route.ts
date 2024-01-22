@@ -2,26 +2,28 @@ import { PrismaClient } from "@prisma/client"
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
+
 const prisma = new PrismaClient()
 
 export async function GET(request: NextApiRequest) {
+
 
   let query = new URL(request.url || "");
 
   try {
 
-    const feed = await prisma.post.findMany({
-      // where: { published: true },
-      include: {
-        author: {
-          select: { name: true },
-        },
-      },
+    let path = query.pathname.split("/");
+
+    const id = path[path.length - 1];
+
+    console.log("identify",id)
+
+    const post = await prisma.post.findUnique({
+        where: { id: id },
     });
 
-    return NextResponse.json(feed)
-
-
+    return NextResponse.json(post);
+    
   } catch (e) {
     console.log("exception occurred", e)
     return NextResponse.json({})

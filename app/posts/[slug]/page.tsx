@@ -6,26 +6,33 @@ import useSWR from 'swr';
 export default async function Blog({ params }: any) {
 
     async function fetchBlog(id: string) {
-
+     
         try {
-          const res = await fetch(`http:localhost:3000/api/posts/?slug=${id}`);
+          var requestOptions = {
+            method: 'GET',
+          };
+
+          const res = await fetch(`http://localhost:3000/api/posts/${id}`,requestOptions);
+
           const response = await res.json();
+          
 
           return response;
         } catch (err) {
           console.error("err,err",err);
         }
+        
       }
 
 
 
       const blog = await fetchBlog(params.slug);
 
-      console.log("blogsss",blog)
+      console.log("blog",blog)
 
     return (
         <div className='w-100 max-w-lg h-300 rounded shadow-lg p-10 d-flex justify-center align-center'>
-          <div> <p> {blog.title} </p> </div>
+          <div> <p> {blog?.title} </p> </div>
           <div> 
             <Image
                 src={`https://cdn.dummyjson.com/product-images/1/${Math.floor(Math.random() * 5) + 1}.jpg`}
@@ -34,7 +41,8 @@ export default async function Blog({ params }: any) {
                 height={300}
             /> </div>
           <div> 
-            <p> {blog.content}</p>
+
+            <p> {blog?.content}</p>
            </div>
 
         
